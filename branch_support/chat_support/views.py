@@ -54,3 +54,22 @@ def receive_reply(request, user_id, msg_id):
 
         return HttpResponse(json.dumps(ctx), content_type="application/json", status=200)
 
+def save_reply(request):
+
+    if request.method == "POST":
+
+        data = request.POST
+
+        user_id = data.get("user_id")
+        msg_id = data.get("msg_id")
+        reply_text = data.get("message_text")
+
+        timestamp = timezone.now()
+
+        reply = Message.objects.create(user_id=user_id, message_text=reply_text, timestamp=timestamp, parent_id_id=msg_id, is_reply=True)
+
+        ctx = {
+            "msg_id":reply.id
+        }
+
+        return HttpResponse(json.dumps(ctx), status=201)
