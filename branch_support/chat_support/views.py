@@ -7,6 +7,8 @@ import json
 app_name = "chat_support"
 # Create your views here.
 
+message_state = {}
+
 def send_msg(request):
 
     if request.method == "POST":
@@ -54,6 +56,7 @@ def receive_reply(request, user_id, msg_id):
 
         return HttpResponse(json.dumps(ctx), content_type="application/json", status=200)
 
+#Customer s
 def save_reply(request):
 
     if request.method == "POST":
@@ -73,3 +76,32 @@ def save_reply(request):
         }
 
         return HttpResponse(json.dumps(ctx), status=201)
+
+def get_msg(request):
+
+    if request.method == "GET":
+
+        messages = Message.objects.filter(is_reply=False, parent_id=None)
+        new_msg_id = -1
+        message_text = ""
+
+        for message in messages:
+            if message.id not in message_state:
+                
+                new_msg_id = message.id
+                message_text = message.message_text
+                message_state[message.id] = True
+                break
+        
+        if new_msg_id != -1:
+            ctx = {
+                "message_text":message_text,
+                "msg_id" : new_msg_id
+            }
+        else:
+            ctx = {
+                "message_text":"No new messages",
+                "msg_id":None
+            }
+
+        return HttpResponse(json.dumps(ctx), status=200)
