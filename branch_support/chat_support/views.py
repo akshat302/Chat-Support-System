@@ -18,9 +18,10 @@ def send_msg(request):
         print("HHEHHHE", data)
         user_id = data.get("user_id")
         message_text = data.get("message_text")
+        priority = data.get("priority")
         timestamp = timezone.now()
 
-        message = Message.objects.create(user_id=user_id, message_text=message_text,timestamp=timestamp, parent_id=None, is_reply=False)
+        message = Message.objects.create(user_id=user_id, message_text=message_text,timestamp=timestamp, parent_id=None, is_reply=False, priority=priority)
         
         ctx = {
             "msg_id" : message.id
@@ -83,7 +84,7 @@ def get_msg(request):
     if request.method == "GET":
 
         with transaction.atomic():
-            message = Message.objects.select_for_update().filter(is_reply=False, parent_id=None, to_be_replied=False).first() 
+            message = Message.objects.select_for_update().filter(is_reply=False, parent_id=None, to_be_replied=False).order_by("priority").first() 
             if message is None:
                 ctx = {
                     "message_text":"No new messages",
