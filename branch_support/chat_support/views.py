@@ -81,27 +81,22 @@ def get_msg(request):
 
     if request.method == "GET":
 
-        messages = Message.objects.filter(is_reply=False, parent_id=None)
-        new_msg_id = -1
-        message_text = ""
+        message = Message.objects.filter(is_reply=False, parent_id=None, to_be_replied=False).first()
 
-        for message in messages:
-            if message.id not in message_state:
-                
-                new_msg_id = message.id
-                message_text = message.message_text
-                message_state[message.id] = True
-                break
-        
-        if new_msg_id != -1:
-            ctx = {
-                "message_text":message_text,
-                "msg_id" : new_msg_id
-            }
-        else:
+        if message is None:
             ctx = {
                 "message_text":"No new messages",
                 "msg_id":None
             }
+        
+        else:
+            message.to_be_replied = True
+            message.save()
+            
+            ctx = {
+                "message_text":message.message_text,
+                "msg_id" : message.id
+            }
+
 
         return HttpResponse(json.dumps(ctx), status=200)
