@@ -10,5 +10,3 @@ class Message(models.Model):
     parent_id = models.ForeignKey("Message", on_delete=models.CASCADE, null=True)
     is_reply = models.BooleanField(default=False)
     to_be_replied = models.BooleanField(default=False)
-
-

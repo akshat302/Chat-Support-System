@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
 from chat_support.models import Message
+from django.db import transaction
 import json
 
 app_name = "chat_support"
@@ -81,22 +82,22 @@ def get_msg(request):
 
     if request.method == "GET":
 
-        message = Message.objects.filter(is_reply=False, parent_id=None, to_be_replied=False).first()
-
-        if message is None:
-            ctx = {
-                "message_text":"No new messages",
-                "msg_id":None
-            }
-        
-        else:
-            message.to_be_replied = True
-            message.save()
+        with transaction.atomic():
+            message = Message.objects.select_for_update().filter(is_reply=False, parent_id=None, to_be_replied=False).first() 
+            if message is None:
+                ctx = {
+                    "message_text":"No new messages",
+                    "msg_id":None
+                }
             
-            ctx = {
-                "message_text":message.message_text,
-                "msg_id" : message.id
-            }
+            else:
+                message.to_be_replied = True
+                message.save()
+                
+                ctx = {
+                    "message_text":message.message_text,
+                    "msg_id" : message.id
+                }
 
 
         return HttpResponse(json.dumps(ctx), status=200)
