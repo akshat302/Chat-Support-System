@@ -15,7 +15,6 @@ def send_msg(request):
     if request.method == "POST":
 
         data = request.POST
-        print("HHEHHHE", data)
         user_id = data.get("user_id")
         message_text = data.get("message_text")
         priority = data.get("priority")
@@ -27,7 +26,7 @@ def send_msg(request):
             "msg_id" : message.id
         }
         
-        return HttpResponse(json.dumps(ctx), status=201)
+        return HttpResponse(json.dumps(ctx), status=201, content_type="application/json")
     
     return HttpResponse(status=401)
 
@@ -57,6 +56,8 @@ def receive_reply(request, user_id, msg_id):
             }
 
         return HttpResponse(json.dumps(ctx), content_type="application/json", status=200)
+    
+    return HttpResponse(status=401)
 
 #Customer s
 def save_reply(request):
@@ -77,7 +78,9 @@ def save_reply(request):
             "msg_id":reply.id
         }
 
-        return HttpResponse(json.dumps(ctx), status=201)
+        return HttpResponse(json.dumps(ctx), content_type="application/json", status=201)
+
+    return HttpResponse(status=401)
 
 def get_msg(request):
 
@@ -85,6 +88,7 @@ def get_msg(request):
 
         with transaction.atomic():
             message = Message.objects.select_for_update().filter(is_reply=False, parent_id=None, to_be_replied=False).order_by("priority").first() 
+            # Include 1s sleep
             if message is None:
                 ctx = {
                     "message_text":"No new messages",
@@ -101,4 +105,6 @@ def get_msg(request):
                 }
 
 
-        return HttpResponse(json.dumps(ctx), status=200)
+        return HttpResponse(json.dumps(ctx), content_type="application/json", status=200)
+
+    return HttpResponse(status=401)
