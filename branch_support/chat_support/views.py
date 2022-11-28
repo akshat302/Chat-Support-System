@@ -70,16 +70,28 @@ def save_reply(request):
         msg_id = data.get("msg_id")
         reply_text = data.get("message_text")
 
+        if msg_id is None:
+            return HttpResponse(status=500)
+
         timestamp = timezone.now()
-        message = Message.objects.filter(id=msg_id).first()
+        message = Message.objects.filter(id=msg_id, to_be_replied=True).first()
 
-        reply = Message.objects.create(user_id=user_id, message_text=reply_text, timestamp=timestamp, parent_id=message, is_reply=True)
+        if message is not None:
 
-        ctx = {
-            "msg_id":reply.id
-        }
+            reply = Message.objects.create(
+                user_id=user_id, 
+                message_text=reply_text, 
+                timestamp=timestamp, 
+                parent_id=message, 
+            )
 
-        return HttpResponse(json.dumps(ctx), content_type="application/json", status=201)
+            ctx = {
+                "msg_id":reply.id
+            }
+
+            return HttpResponse(json.dumps(ctx), content_type="application/json", status=201)
+        else:
+            return HttpResponse(status=500)
 
     return HttpResponse(status=401)
 
@@ -88,7 +100,7 @@ def get_msg(request):
     if request.method == "GET":
 
         with transaction.atomic():
-            message = Message.objects.select_for_update().filter(is_reply=False, parent_id=None, to_be_replied=False).order_by("priority").first() 
+            message = Message.objects.select_for_update().filter(parent_id=None, to_be_replied=False).order_by("priority").first() 
             # Include 1s sleep
             if message is None:
                 ctx = {

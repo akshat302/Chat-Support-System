@@ -44,3 +44,5 @@ class TestChatSupport(TestCase):
         self.assertIsNotNone(reply)
 
         self.assertEqual(reply.message_text, data["message_text"])
+
+    
