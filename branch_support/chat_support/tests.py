@@ -47,18 +47,6 @@ class TestChatSupport(TestCase):
     #         self.assertEqual(reply.message_text, data["message_text"])
     
 
-    # def test_get_msg(self):
-
-    #     message = Message.objects.create(user_id=21, message_text="Any response to my above queries please???", priority=13)
-    #     reply_message = Message.objects.create(user_id=21, message_text="Any response to my above queries please???", priority=13)
-    #     #message_2 = Message.objects.create(user_id=22, message_text="What SMSs should i accumulate on my phone?", priority=12)
-    #     #message_3 = Message.objects.create(user_id=23, message_text="Hi, kindly can i have the batch number", priority=11)
-
-    #     c = Client()
-
-    #     response = c.get(path="/receive_reply/{message_1.user_id}/{message_1}")
-
-
     def test_receive_reply(self):
 
         timestamp = timezone.now()
@@ -75,4 +63,33 @@ class TestChatSupport(TestCase):
         self.assertEqual(reply_message_text, reply_message.message_text)
 
 
+    def test_get_msg(self):
+        
+        timestamp = timezone.now()
+        message_1 = Message.objects.create(user_id=21, message_text="Any response to my above queries please???", priority=13, timestamp=timestamp)
+        message_2 = Message.objects.create(user_id=22, message_text="What SMSs should i accumulate on my phone?", priority=12, timestamp=timestamp)
+    
+        c = Client()
 
+        response_1 = c.get(path="/get_msg/")
+
+        self.assertEqual(response_1.status_code, 200)
+
+        message_text = response_1.json()["message_text"]
+        msg_id = response_1.json()["msg_id"]
+
+        self.assertIsNotNone(msg_id)
+        self.assertEqual(message_text, message_2.message_text) # because message 2 priority is higher
+
+        response_2 = c.get(path="/get_msg/")
+
+        self.assertEqual(response_2.status_code, 200)
+
+        message_text = response_2.json()["message_text"]
+        msg_id = response_2.json()["msg_id"]
+
+        self.assertIsNotNone(msg_id)
+        self.assertEqual(message_text, message_1.message_text)
+
+    
+    
