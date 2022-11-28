@@ -20,7 +20,7 @@ def send_msg(request):
         priority = data.get("priority")
         timestamp = timezone.now()
 
-        message = Message.objects.create(user_id=user_id, message_text=message_text,timestamp=timestamp, parent_id=None, is_reply=False, priority=priority)
+        message = Message.objects.create(user_id=user_id, message_text=message_text,timestamp=timestamp, parent_id=None,priority=priority)
         
         ctx = {
             "msg_id" : message.id
@@ -75,7 +75,8 @@ def save_reply(request):
 
         timestamp = timezone.now()
         message = Message.objects.filter(id=msg_id, to_be_replied=True).first()
-
+        print(message)
+        
         if message is not None:
 
             reply = Message.objects.create(
@@ -90,8 +91,10 @@ def save_reply(request):
             }
 
             return HttpResponse(json.dumps(ctx), content_type="application/json", status=201)
+
         else:
-            return HttpResponse(status=500)
+
+            return HttpResponse(status=501)
 
     return HttpResponse(status=401)
 
