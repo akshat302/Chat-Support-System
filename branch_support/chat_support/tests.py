@@ -26,25 +26,27 @@ class TestChatSupport(TestCase):
 
         self.assertEqual(message.message_text, data["message_text"])
  
-    # def test_save_reply(self):
+    def test_save_reply(self):
 
-    #         data = {"user_id":19, "msg_id":10, "message_text":"The loan has been approved"}
+            timestamp = timezone.now()
+            message = Message.objects.create(user_id=21, message_text="Any response to my above queries please???", priority=13, to_be_replied=True, timestamp=timestamp)
+            
+            data = {"user_id":message.user_id, "msg_id":message.id, "message_text":"Sure we'll look into it"}
 
-    #         c = Client()
-    #         #pdb.set_trace()
-    #         response = c.post(path="/save_reply/", data=data)
+            c = Client()
+        
+            response = c.post(path="/save_reply/", data=data)
 
-    #         self.assertEqual(response.status_code, 201)
+            self.assertEqual(response.status_code, 201)
 
-    #         #pdb.set_trace()
-    #         msg_id = response.json()["msg_id"]
-    #         self.assertIsNotNone(msg_id)
+            msg_id = response.json()["msg_id"]
+            self.assertIsNotNone(msg_id)
 
-    #         reply = Message.objects.filter(id=msg_id).first()
+            reply = Message.objects.filter(id=msg_id).first()
 
-    #         self.assertIsNotNone(reply)
+            self.assertIsNotNone(reply)
 
-    #         self.assertEqual(reply.message_text, data["message_text"])
+            self.assertEqual(reply.message_text, data["message_text"])
     
 
     def test_receive_reply(self):
@@ -91,5 +93,4 @@ class TestChatSupport(TestCase):
         self.assertIsNotNone(msg_id)
         self.assertEqual(message_text, message_1.message_text)
 
-    
     
