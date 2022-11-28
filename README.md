@@ -60,7 +60,7 @@ receive_reply -
     Type - GET
     Description - Allows the users to see the reply they get against thier message
     Response - ctx = {
-                "user_id": user_id,
+                "user_id": 2,
                 "reply_message":"We are working on it",
                 "timestamp": "11/28/22, 17:18:45",
                 "reply_ready": True }
