@@ -94,7 +94,7 @@ def save_reply(request):
 
         else:
 
-            return HttpResponse(status=501)
+            return HttpResponse(status=500)
 
     return HttpResponse(status=401)
 
