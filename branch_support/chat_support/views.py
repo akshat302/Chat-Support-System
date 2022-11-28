@@ -59,7 +59,7 @@ def receive_reply(request, user_id, msg_id):
     
     return HttpResponse(status=401)
 
-#Customer s
+
 def save_reply(request):
 
     if request.method == "POST":
@@ -71,8 +71,9 @@ def save_reply(request):
         reply_text = data.get("message_text")
 
         timestamp = timezone.now()
+        message = Message.objects.filter(id=msg_id).first()
 
-        reply = Message.objects.create(user_id=user_id, message_text=reply_text, timestamp=timestamp, parent_id_id=msg_id, is_reply=True)
+        reply = Message.objects.create(user_id=user_id, message_text=reply_text, timestamp=timestamp, parent_id=message, is_reply=True)
 
         ctx = {
             "msg_id":reply.id

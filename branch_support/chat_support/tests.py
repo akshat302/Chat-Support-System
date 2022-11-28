@@ -2,8 +2,7 @@ from django.test import TestCase, Client
 from chat_support.models import Message
 from chat_support.views import send_msg, receive_reply, get_msg, save_reply
 from django.test import TestCase
-
-
+import pdb
 # Create your tests here.
 class TestChatSupport(TestCase):
 
@@ -27,5 +26,21 @@ class TestChatSupport(TestCase):
         self.assertEqual(message.message_text, data["message_text"])
     
 
+    def test_save_reply(self):
 
+        data = {"user_id":13, "msg_id":9, "message_text":"The loan has been approved"}
 
+        c = Client()
+        response = c.post(path="/save_reply/", data=data)
+
+        self.assertEqual(response.status_code, 201)
+
+        #pdb.set_trace()
+        msg_id = response.json()["msg_id"]
+        self.assertIsNotNone(msg_id)
+
+        reply = Message.objects.filter(id=msg_id).first()
+
+        self.assertIsNotNone(reply)
+
+        self.assertEqual(reply.message_text, data["message_text"])
