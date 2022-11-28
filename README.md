@@ -22,6 +22,7 @@
 
 ## Overview 
 
+Detailed Explanation - https://docs.google.com/document/d/1P0ClLLYY8fbKF373hqhndRWflH8-zNby_FZNPMoMTLk/edit?usp=sharing
 
 ### Entities 
 
