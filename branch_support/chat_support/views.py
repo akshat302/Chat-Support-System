@@ -75,7 +75,7 @@ def save_reply(request):
 
         timestamp = timezone.now()
         message = Message.objects.filter(id=msg_id, to_be_replied=True).first()
-        print(message)
+    
         
         if message is not None:
 
