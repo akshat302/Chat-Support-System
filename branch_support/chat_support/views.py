@@ -104,7 +104,7 @@ def get_msg(request):
 
         with transaction.atomic():
             message = Message.objects.select_for_update().filter(parent_id=None, to_be_replied=False).order_by("priority").first() 
-            # Include 1s sleep
+    
             if message is None:
                 ctx = {
                     "message_text":"No new messages",
