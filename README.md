@@ -13,7 +13,7 @@
 ### Steps to run
 
 1. clone the github repo - git clone https://github.com/akshat302/Chat-Support-System.git
-2. cd into the Branch-International folder - cd Branch-International/branch_support
+2. cd into the Branch-International folder - cd Chat-Support-System/branch_support
 3. run python manage.py migrate in the terminal.
 4. run python manage.py runserver in the terminal to run the server.
 5. To run test corresponding to the API's run `python manage.py test` in the terminal.
